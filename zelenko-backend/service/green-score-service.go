@@ -31,20 +31,20 @@ func NewGreenScoreService(gsr repository.GreenScoreRepository, gc crdt.GCounter)
 }
 
 // TODO: Later in app development everything that is dummy object to replace with real dynamic object
+// TODO: Must implement code that from time to time writes from redis to relational database to keep data
+// Test for redis cli: redis-cli HGET dfd16f29-0d34-4e42-8ce4-f9e476d9a277 Verification
 func (s *greenScoreService) AddOne() model.GreenObject {
 
 	var g_count int
 	g_counter.Increment(dummyObject.ID.String())
-	fmt.Println("Init")
-	fmt.Println(g_count)
 	g_count = g_counter.GetValue(dummyObject.ID.String())
 
 	dummyObject.GreenScore.Verification = g_count
 
 	dummyObject = greenScoreRepository.AddOne(dummyObject)
-	fmt.Println("Final")
-	fmt.Println(dummyObject.GreenScore.Verification)
+	fmt.Println(greenScoreRepository.GetAttributeForObject(dummyObject.ID.String(), "Verification"))
 	return dummyObject
+
 }
 
 func (s *greenScoreService) SubOne() {}
