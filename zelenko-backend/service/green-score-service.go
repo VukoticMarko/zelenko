@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"zelenko-backend/crdt"
 	"zelenko-backend/dummy"
 	"zelenko-backend/model"
@@ -10,7 +9,7 @@ import (
 
 type GreenScoreService interface {
 	AddOne() model.GreenObject
-	SubOne()
+	SubOne() model.GreenObject
 }
 
 type greenScoreService struct{}
@@ -41,10 +40,21 @@ func (s *greenScoreService) AddOne() model.GreenObject {
 
 	dummyObject.GreenScore.Verification = g_count
 
-	dummyObject = greenScoreRepository.AddOne(dummyObject)
-	fmt.Println(greenScoreRepository.GetAttributeForObject(dummyObject.ID.String(), "Verification"))
+	dummyObject = greenScoreRepository.Change(dummyObject)
+	//fmt.Println(greenScoreRepository.GetAttributeForObject(dummyObject.ID.String(), "Verification"))
 	return dummyObject
 
 }
 
-func (s *greenScoreService) SubOne() {}
+func (s *greenScoreService) SubOne() model.GreenObject {
+
+	var g_count int
+	g_counter.Decrement(dummyObject.ID.String())
+	g_count = g_counter.GetValue(dummyObject.ID.String())
+	dummyObject.GreenScore.Verification = g_count
+
+	dummyObject = greenScoreRepository.Change(dummyObject)
+	//fmt.Println(greenScoreRepository.GetAttributeForObject(dummyObject.ID.String(), "Verification"))
+	return dummyObject
+
+}

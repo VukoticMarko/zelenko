@@ -14,7 +14,7 @@ var (
 )
 
 type GreenScoreRepository interface {
-	AddOne(model.GreenObject) model.GreenObject
+	Change(model.GreenObject) model.GreenObject
 	GetAttributeForObject(objectID string, attribute string) int64
 }
 
@@ -40,7 +40,7 @@ func initRedis() {
 	fmt.Println("Redis vas pozdravlja: " + pong)
 }
 
-func (*greenScoreRepository) AddOne(greenObject model.GreenObject) model.GreenObject {
+func (*greenScoreRepository) Change(greenObject model.GreenObject) model.GreenObject {
 
 	SetAttributeForObject(greenObject.ID.String(), "Verification", greenObject.GreenScore.Verification)
 	return greenObject

@@ -33,7 +33,8 @@ func (*greenScoreController) AddOne(response http.ResponseWriter, request *http.
 
 func (*greenScoreController) SubOne(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("Content-Type", "application/json")
-
+	var greenObject model.GreenObject
+	greenObject = greenScoreService.SubOne()
 	response.WriteHeader(http.StatusOK)
-	//json.NewEncoder(response).Encode(cards)
+	json.NewEncoder(response).Encode(greenObject)
 }
