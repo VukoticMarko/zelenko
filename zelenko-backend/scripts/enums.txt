@@ -1,0 +1,76 @@
+CREATE TYPE "user_role" AS ENUM (
+  'unregistred',
+  'normal',
+  'developer',
+  'moderator',
+  'admin'
+);
+
+CREATE TYPE "trash_rank" AS ENUM (
+  'new',
+  'rising',
+  'verified',
+  'questionable'
+);
+
+CREATE TYPE "relationships" AS ENUM (
+  'friend',
+  'pending',
+  'block'
+);
+
+CREATE TYPE "user_ranks" AS ENUM (
+  'baby',
+  'rookie',
+  'novice',
+  'master',
+  'supreme',
+  'elite',
+  'legendary'
+);
+
+CREATE TYPE "sex" AS ENUM (
+  'male',
+  'female'
+);
+
+CREATE TYPE "trash_shape" AS ENUM (
+  'can',
+  'dumpster',
+  'underground',
+  'animal_garbage',
+  'junkyard',
+  'city_department',
+  'waste_disposal',
+  'waste_transfer',
+  'waste_process_complex',
+  'incineration_plant',
+  'recycle_center',
+  'landfill'
+);
+
+CREATE TYPE "trash_type" AS ENUM (
+  'all',
+  'pet',
+  'plastic',
+  'paper',
+  'metal',
+  'weee',
+  'wood',
+  'glass',
+  'biodegradable',
+  'medical',
+  'toxic',
+  'nuclear',
+  'organic',
+  'radioactive',
+  'construction',
+  'battery',
+  'liquid',
+  'hazard'
+);
+
+CREATE TYPE "premium" AS ENUM (
+  'normal',
+  'premium'
+);

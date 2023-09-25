@@ -16,9 +16,9 @@ func (Dummy) GetDummy1() model.GreenObject {
 	//newUUID := uuid.New()
 
 	gs := model.GreenScore{
-		//Verification: 0,
-		Report:    5,
-		TrashRank: "new",
+		Verification: 0,
+		Report:       5,
+		TrashRank:    "new",
 	}
 
 	dummy := model.GreenObject{

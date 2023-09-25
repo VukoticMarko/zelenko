@@ -17,6 +17,10 @@ func main() {
 		greenScoreService    service.GreenScoreService       = service.NewGreenScoreService(greenScoreRepository, g_counter)
 		greenScoreController controller.GreenScoreController = controller.NewGreenScoreController(greenScoreService)
 
+		userRepository repository.UserRepository = repository.NewUserRepository()
+		userService    service.UserService       = service.NewUserService(userRepository)
+		userController controller.UserController = controller.NewUserController(userService)
+
 		httpRouter router.Router = router.NewMuxRouter()
 	)
 	const port string = ":2023"
@@ -27,6 +31,8 @@ func main() {
 
 	httpRouter.POST("/addScore", greenScoreController.AddOne)
 	httpRouter.POST("/subScore", greenScoreController.SubOne)
+	httpRouter.POST("/addUser", userController.AddUser)
+	httpRouter.POST("/getUser", userController.GetUser)
 
 	httpRouter.SERVE(port)
 

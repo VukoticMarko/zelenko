@@ -1,9 +1,9 @@
 package repository
 
 const (
-	hostDB     = "localhost"
-	portDB     = 5432
-	userDB     = "postgres"
-	passwordDB = "123"
-	dbnameDB   = "zelenko_db"
+	hostSQL     = "localhost"
+	portSQL     = 5432
+	userSQL     = "postgres"
+	passwordSQL = "123"
+	dbnameSQL   = "zelenko"
 )
