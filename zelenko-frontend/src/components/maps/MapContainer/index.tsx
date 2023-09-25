@@ -7,7 +7,7 @@ import VectorSource from 'ol/source/Vector';
 import { Geometry, Point } from 'ol/geom';
 import { Flex } from '@chakra-ui/react';
 
-import { IFeatureInfo, addFeature, createFeature, initializeMap } from './utils';
+import { IFeatureInfo, createFeature, initializeMap } from './utils';
 import { setSelectedGreenObject } from '../../../slices/greenObject.slice';
 
 import './index.css';

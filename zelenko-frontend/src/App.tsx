@@ -20,7 +20,7 @@ export const App = () => (
       <Grid minH="100vh" p={3}>
         <VStack spacing={8}>
           <Text>
-            Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
+           Welcome to <Code fontSize="xl">zelenko-frontend/src/App.tsx</Code>.
           </Text>
           <Center>
             <GreenObjectsPage/>
