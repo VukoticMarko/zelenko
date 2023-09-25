@@ -8,3 +8,7 @@ type GreenScore struct {
 	Report       int
 	TrashRank    string
 }
+
+const (
+	New = "new"
+)

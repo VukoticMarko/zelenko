@@ -27,7 +27,7 @@ CREATE TABLE "Location" (
 CREATE TABLE "UserRank" (
   "Id" uuid UNIQUE PRIMARY KEY,
   "UserPoints" integer,
-  "UserRank" user_ranks,
+  "UserRank" varchar(15),
   "Premium" varchar(15),
   "PremiumLength" date
 );

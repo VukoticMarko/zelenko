@@ -17,6 +17,10 @@ func main() {
 		greenScoreService    service.GreenScoreService       = service.NewGreenScoreService(greenScoreRepository, g_counter)
 		greenScoreController controller.GreenScoreController = controller.NewGreenScoreController(greenScoreService)
 
+		greenObjectRepository repository.GreenObjectRepository = repository.NewGreenObjectRepository()
+		greenObjectService    service.GreenObjectService       = service.NewGreenObjectService(greenObjectRepository)
+		greenObjectController controller.GreenObjectController = controller.NewGreenObjectController(greenObjectService)
+
 		userRepository repository.UserRepository = repository.NewUserRepository()
 		userService    service.UserService       = service.NewUserService(userRepository)
 		userController controller.UserController = controller.NewUserController(userService)
@@ -31,6 +35,7 @@ func main() {
 
 	httpRouter.POST("/addScore", greenScoreController.AddOne)
 	httpRouter.POST("/subScore", greenScoreController.SubOne)
+	httpRouter.POST("/addObject", greenObjectController.AddObject)
 	httpRouter.POST("/addUser", userController.AddUser)
 	httpRouter.POST("/getUser", userController.GetUser)
 

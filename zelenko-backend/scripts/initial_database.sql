@@ -61,7 +61,7 @@ CREATE TABLE "TOU" (
   "UId" uuid UNIQUE
 );
 
-ALTER TABLE "GreenObject" ADD FOREIGN KEY ("Id") REFERENCES "TOU" ("TOId");
+ALTER TABLE "TOU" ADD FOREIGN KEY ("TOId") REFERENCES "GreenObject" ("Id");
 
 ALTER TABLE "GreenObject" ADD FOREIGN KEY ("Location") REFERENCES "Location" ("Id");
 
