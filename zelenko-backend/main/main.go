@@ -36,6 +36,7 @@ func main() {
 	httpRouter.POST("/addScore", greenScoreController.AddOne)
 	httpRouter.POST("/subScore", greenScoreController.SubOne)
 	httpRouter.POST("/addObject", greenObjectController.AddObject)
+	httpRouter.GET("/getAll", greenObjectController.GetAllObjects)
 	httpRouter.POST("/addUser", userController.AddUser)
 	httpRouter.POST("/getUser", userController.GetUser)
 

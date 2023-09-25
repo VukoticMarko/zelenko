@@ -9,6 +9,7 @@ import (
 
 type GreenObjectController interface {
 	AddObject(response http.ResponseWriter, request *http.Request)
+	GetAllObjects(response http.ResponseWriter, request *http.Request)
 }
 
 type greenObjectController struct{}
@@ -35,6 +36,15 @@ func (*greenScoreController) AddObject(response http.ResponseWriter, request *ht
 	}
 
 	result := greenObjectService.AddObject(greenObject)
+
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(result)
+}
+
+func (*greenScoreController) GetAllObjects(response http.ResponseWriter, request *http.Request) {
+
+	response.Header().Set("Content-Type", "application/json")
+	result := greenObjectService.FindAll()
 
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(result)

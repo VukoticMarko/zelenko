@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"zelenko-backend/dto"
 	"zelenko-backend/model"
 	"zelenko-backend/repository"
@@ -10,6 +11,7 @@ import (
 
 type GreenObjectService interface {
 	AddObject(dto.IGreenObject) model.GreenObject
+	FindAll() []model.GreenObject
 }
 
 type greenObjectService struct{}
@@ -55,5 +57,19 @@ func (s *greenObjectService) AddObject(request dto.IGreenObject) model.GreenObje
 	newObject := greenObjectRepository.Save(gObj)
 
 	return newObject
+
+}
+
+func (s *greenObjectService) FindAll() []model.GreenObject {
+	fmt.Println("Srv")
+	var list []model.GreenObject
+	var err error
+	list, err = greenObjectRepository.FindAll()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return list
 
 }

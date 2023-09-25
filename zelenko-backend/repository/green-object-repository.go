@@ -63,7 +63,56 @@ func (*goRepository) Save(greenObject model.GreenObject) model.GreenObject {
 }
 
 func (*goRepository) FindAll() ([]model.GreenObject, error) {
-	panic("not implemented")
+
+	sqlConn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		hostSQL, portSQL, userSQL, passwordSQL, dbnameSQL)
+
+	db, err := sql.Open("postgres", sqlConn)
+	if err != nil {
+		panic(err)
+	}
+
+	defer db.Close()
+	query := `
+	SELECT
+		go."Id", go."LocationName", go."Shape", go."TrashType", go."Disabled",
+		l."Id" AS "Location.Id", l."Latitude", l."Longitude", l."Street", l."City", l."Country",
+		gs."Id" AS "GreenScore.Id", gs."Verification", gs."Report", gs."TrashRank"
+	FROM "GreenObject" go
+	LEFT JOIN "Location" l ON go."Location" = l."Id"
+	LEFT JOIN "GreenScore" gs ON go."GreenScore" = gs."Id"
+`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var greenObjects []model.GreenObject
+
+	for rows.Next() {
+		var greenObject model.GreenObject
+		var location model.Location
+		var greenScore model.GreenScore
+
+		err := rows.Scan(
+			&greenObject.ID, &greenObject.LocationName, &greenObject.Shape, &greenObject.TrashType, &greenObject.Disabled,
+			&location.ID, &location.Latitude, &location.Longitude, &location.Street, &location.City, &location.Country,
+			&greenScore.ID, &greenScore.Verification, &greenScore.Report, &greenScore.TrashRank,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		greenObject.Location = location
+		greenObject.GreenScore = greenScore
+
+		greenObjects = append(greenObjects, greenObject)
+	}
+
+	return greenObjects, nil
 }
 
 func (*goRepository) FindOne(id uuid.UUID) model.GreenObject {
