@@ -61,7 +61,7 @@ func (s *greenObjectService) AddObject(request dto.IGreenObject) model.GreenObje
 }
 
 func (s *greenObjectService) FindAll() []model.GreenObject {
-	fmt.Println("Srv")
+
 	var list []model.GreenObject
 	var err error
 	list, err = greenObjectRepository.FindAll()

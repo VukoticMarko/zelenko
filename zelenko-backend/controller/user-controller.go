@@ -48,9 +48,7 @@ func (*userController) AddUser(response http.ResponseWriter, request *http.Reque
 }
 
 func (*userController) GetUser(response http.ResponseWriter, request *http.Request) {
-	response.Header().Set("Content-Type", "application/json")
-	var greenObject model.GreenObject
-	greenObject = greenScoreService.SubOne()
+
 	response.WriteHeader(http.StatusOK)
-	json.NewEncoder(response).Encode(greenObject)
+	//json.NewEncoder(response).Encode(greenObject)
 }

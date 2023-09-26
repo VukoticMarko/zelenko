@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+
 	var (
 		g_counter            crdt.GCounter                   = *crdt.NewGCounter()
 		greenScoreRepository repository.GreenScoreRepository = repository.NewGreenScoreRepository()

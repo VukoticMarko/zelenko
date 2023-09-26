@@ -24,17 +24,39 @@ func NewGreenScoreController(service service.GreenScoreService) GreenScoreContro
 }
 
 func (*greenScoreController) AddOne(response http.ResponseWriter, request *http.Request) {
+
 	response.Header().Set("Content-Type", "application/json")
-	var greenObject model.GreenObject
-	greenObject = greenScoreService.AddOne()
+
+	var req model.GreenObject
+
+	err := json.NewDecoder(request.Body).Decode(&req)
+
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp := greenScoreService.AddOne(req)
+
 	response.WriteHeader(http.StatusOK)
-	json.NewEncoder(response).Encode(greenObject)
+	json.NewEncoder(response).Encode(resp)
 }
 
 func (*greenScoreController) SubOne(response http.ResponseWriter, request *http.Request) {
+
 	response.Header().Set("Content-Type", "application/json")
-	var greenObject model.GreenObject
-	greenObject = greenScoreService.SubOne()
+
+	var req model.GreenObject
+
+	err := json.NewDecoder(request.Body).Decode(&req)
+
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	resp := greenScoreService.SubOne(req)
+
 	response.WriteHeader(http.StatusOK)
-	json.NewEncoder(response).Encode(greenObject)
+	json.NewEncoder(response).Encode(resp)
 }
