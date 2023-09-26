@@ -121,7 +121,7 @@ func (*goRepository) FindOne(id uuid.UUID) model.GreenObject {
 }
 
 func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject {
-	fmt.Println("aloha")
+
 	sqlConn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		hostSQL, portSQL, userSQL, passwordSQL, dbnameSQL)
 
@@ -185,8 +185,6 @@ func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject 
 		greenObject.GreenScore.TrashRank,
 		greenObject.GreenScore.ID,
 	)
-
-	fmt.Println(err)
 
 	return greenObject
 }
