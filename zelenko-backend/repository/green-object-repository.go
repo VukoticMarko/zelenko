@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"zelenko-backend/model"
 
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
 
 type GreenObjectRepository interface {
 	Save(user model.GreenObject) model.GreenObject
 	FindAll() ([]model.GreenObject, error)
-	FindOne(id uuid.UUID) model.GreenObject
 	UpdateOne(model.GreenObject) model.GreenObject
+	FindOne(objectID string) (model.GreenObject, error)
 }
 
 type goRepository struct{}
@@ -116,8 +115,50 @@ func (*goRepository) FindAll() ([]model.GreenObject, error) {
 	return greenObjects, nil
 }
 
-func (*goRepository) FindOne(id uuid.UUID) model.GreenObject {
-	panic("not implemented")
+func (*goRepository) FindOne(objectID string) (model.GreenObject, error) {
+
+	var result model.GreenObject
+
+	sqlConn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		hostSQL, portSQL, userSQL, passwordSQL, dbnameSQL)
+
+	db, err := sql.Open("postgres", sqlConn)
+	if err != nil {
+		return result, err
+	}
+
+	defer db.Close()
+	query := `
+	SELECT
+		go."Id", go."LocationName", go."Shape", go."TrashType", go."Disabled",
+		l."Id" AS "Location.Id", l."Latitude", l."Longitude", l."Street", l."City", l."Country",
+		gs."Id" AS "GreenScore.Id", gs."Verification", gs."Report", gs."TrashRank"
+	FROM "GreenObject" go
+	LEFT JOIN "Location" l ON go."Location" = l."Id"
+	LEFT JOIN "GreenScore" gs ON go."GreenScore" = gs."Id"
+	WHERE go."Id" = $1
+`
+
+	var greenObject model.GreenObject
+	var location model.Location
+	var greenScore model.GreenScore
+
+	err = db.QueryRow(query, objectID).Scan(
+		&greenObject.ID, &greenObject.LocationName, &greenObject.Shape, &greenObject.TrashType, &greenObject.Disabled,
+		&location.ID, &location.Latitude, &location.Longitude, &location.Street, &location.City, &location.Country,
+		&greenScore.ID, &greenScore.Verification, &greenScore.Report, &greenScore.TrashRank,
+	)
+
+	if err != nil {
+		return result, err
+	}
+
+	greenObject.Location = location
+	greenObject.GreenScore = greenScore
+
+	result = greenObject
+
+	return result, nil
 }
 
 func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject {

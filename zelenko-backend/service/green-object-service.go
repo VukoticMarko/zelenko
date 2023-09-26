@@ -12,6 +12,7 @@ import (
 type GreenObjectService interface {
 	AddObject(dto.IGreenObject) model.GreenObject
 	FindAll() []model.GreenObject
+	UpdateObject(dto.IGreenObject) model.GreenObject
 }
 
 type greenObjectService struct{}
@@ -81,6 +82,14 @@ func (s *greenObjectService) FindAll() []model.GreenObject {
 	}
 
 	return list
+
+}
+
+func (s *greenObjectService) UpdateObject(object dto.IGreenObject) model.GreenObject {
+
+	result, _ := greenObjectRepository.FindOne(object.ID)
+	result = greenObjectRepository.UpdateOne(result)
+	return result
 
 }
 

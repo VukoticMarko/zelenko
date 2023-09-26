@@ -10,6 +10,7 @@ import (
 type GreenObjectController interface {
 	AddObject(response http.ResponseWriter, request *http.Request)
 	GetAllObjects(response http.ResponseWriter, request *http.Request)
+	UpdateObject(response http.ResponseWriter, request *http.Request)
 }
 
 type greenObjectController struct{}
@@ -45,6 +46,23 @@ func (*greenScoreController) GetAllObjects(response http.ResponseWriter, request
 
 	response.Header().Set("Content-Type", "application/json")
 	result := greenObjectService.FindAll()
+
+	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(result)
+}
+
+func (*greenScoreController) UpdateObject(response http.ResponseWriter, request *http.Request) {
+
+	var greenObject dto.IGreenObject
+
+	err := json.NewDecoder(request.Body).Decode(&greenObject)
+
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	result := greenObjectService.UpdateObject(greenObject)
 
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(result)
