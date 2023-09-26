@@ -15,7 +15,7 @@ var (
 
 type GreenScoreRepository interface {
 	Change(model.GreenObject) model.GreenObject
-	GetAttributeForObject(objectID string, attribute string) int64
+	GetAttributeForObject(objectID string, attribute string) (int64, error)
 }
 
 type greenScoreRepository struct {
@@ -55,11 +55,12 @@ func SetAttributeForObject(objectID string, attribute string, value int) error {
 	return nil
 }
 
-func (*greenScoreRepository) GetAttributeForObject(objectID string, attribute string) int64 {
+func (*greenScoreRepository) GetAttributeForObject(objectID string, attribute string) (int64, error) {
+	fmt.Println(objectID, attribute)
 	val, err := redisClient.HGet(ctx, objectID, attribute).Int64()
 	if err != nil {
 		fmt.Println("Error fetching from Redis!")
-		return 0
+		return 0, err
 	}
-	return val
+	return val, err
 }
