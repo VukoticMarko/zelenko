@@ -19,11 +19,13 @@ type greenObjectService struct{}
 var (
 	greenObjectRepository repository.GreenObjectRepository
 	gsRepository          repository.GreenScoreRepository
+	counter               int
 )
 
 func NewGreenObjectService(gor repository.GreenObjectRepository, gsr repository.GreenScoreRepository) GreenObjectService {
 	greenScoreRepository = gsr
 	greenObjectRepository = gor
+	counter = 0
 	return &greenObjectService{}
 }
 
@@ -71,11 +73,34 @@ func (s *greenObjectService) FindAll() []model.GreenObject {
 		fmt.Println(err)
 	}
 
-	for _, element := range list {
-		score := gsRepository.GetAttributeForObject(element.ID.String(), "Verification")
-		element.GreenScore.Verification = int(score)
+	UpdateScores(list, 1)
+
+	counter++
+
+	if counter >= 10 {
+		UpdateScores(list, 2)
+		counter = 0
 	}
 
 	return list
 
+}
+
+func UpdateScores(list []model.GreenObject, flag int) []model.GreenObject {
+	if flag == 1 {
+		for _, element := range list {
+			score := gsRepository.GetAttributeForObject(element.ID.String(), "Verification")
+			element.GreenScore.Verification = int(score)
+		}
+		return list
+	}
+	if flag == 2 {
+		for _, element := range list {
+			score := gsRepository.GetAttributeForObject(element.ID.String(), "Verification")
+			element.GreenScore.Verification = int(score)
+			element = greenObjectRepository.UpdateOne(element)
+		}
+		return list
+	}
+	return list
 }

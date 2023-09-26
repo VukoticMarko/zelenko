@@ -13,6 +13,7 @@ type GreenObjectRepository interface {
 	Save(user model.GreenObject) model.GreenObject
 	FindAll() ([]model.GreenObject, error)
 	FindOne(id uuid.UUID) model.GreenObject
+	UpdateOne(model.GreenObject) model.GreenObject
 }
 
 type goRepository struct{}
@@ -117,4 +118,75 @@ func (*goRepository) FindAll() ([]model.GreenObject, error) {
 
 func (*goRepository) FindOne(id uuid.UUID) model.GreenObject {
 	panic("not implemented")
+}
+
+func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject {
+
+	sqlConn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		hostSQL, portSQL, userSQL, passwordSQL, dbnameSQL)
+
+	db, err := sql.Open("postgres", sqlConn)
+	if err != nil {
+		panic(err)
+	}
+
+	defer db.Close()
+
+	greenObjectQuery := `
+    UPDATE "GreenObject"
+    SET
+        "LocationName" = $1,
+        "Shape" = $2,
+        "TrashType" = $3,
+        "Disabled" = $4
+    WHERE "ID" = $5
+    `
+
+	locationQuery := `
+    UPDATE "Location"
+    SET
+        "Latitude" = $1,
+        "Longitude" = $2,
+        "Street" = $3,
+        "City" = $4,
+        "Country" = $5
+    WHERE "ID" = $6
+    `
+
+	greenScoreQuery := `
+    UPDATE "GreenScore"
+    SET
+        "Verification" = $1,
+        "Report" = $2,
+        "TrashRank" = $3
+    WHERE "ID" = $4
+    `
+
+	_, err = db.Exec(greenObjectQuery,
+		greenObject.LocationName,
+		greenObject.Shape,
+		greenObject.TrashType,
+		greenObject.Disabled,
+		greenObject.ID,
+	)
+
+	_, err = db.Exec(locationQuery,
+		greenObject.Location.Latitude,
+		greenObject.Location.Longitude,
+		greenObject.Location.Street,
+		greenObject.Location.City,
+		greenObject.Location.Country,
+		greenObject.Location.ID,
+	)
+
+	_, err = db.Exec(greenScoreQuery,
+		greenObject.GreenScore.Verification,
+		greenObject.GreenScore.Report,
+		greenObject.GreenScore.TrashRank,
+		greenObject.GreenScore.ID,
+	)
+
+	fmt.Println(err)
+
+	return greenObject
 }
