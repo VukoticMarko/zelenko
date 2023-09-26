@@ -19,7 +19,7 @@ func main() {
 		greenScoreController controller.GreenScoreController = controller.NewGreenScoreController(greenScoreService)
 
 		greenObjectRepository repository.GreenObjectRepository = repository.NewGreenObjectRepository()
-		greenObjectService    service.GreenObjectService       = service.NewGreenObjectService(greenObjectRepository)
+		greenObjectService    service.GreenObjectService       = service.NewGreenObjectService(greenObjectRepository, greenScoreRepository)
 		greenObjectController controller.GreenObjectController = controller.NewGreenObjectController(greenObjectService)
 
 		userRepository repository.UserRepository = repository.NewUserRepository()
