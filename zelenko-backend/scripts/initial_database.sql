@@ -2,7 +2,7 @@ CREATE TABLE "GreenObject" (
   "Id" uuid UNIQUE PRIMARY KEY,
   "LocationName" varchar(50) NOT NULL,
   "Location" uuid,
-  "Shape" varchar(15),
+  "Shape" varchar(30),
   "TrashType" varchar(15),
   "GreenScore" uuid,
   "Disabled" boolean

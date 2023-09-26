@@ -56,7 +56,15 @@ func SetAttributeForObject(objectID string, attribute string, value int) error {
 }
 
 func (*greenScoreRepository) GetAttributeForObject(objectID string, attribute string) (int64, error) {
-	fmt.Println(objectID, attribute)
+	exists, err := redisClient.HExists(ctx, objectID, attribute).Result()
+	if err != nil {
+		return 0, err
+	}
+
+	if !exists {
+		return 0, fmt.Errorf("Key or attribute doesn't exist")
+	}
+
 	val, err := redisClient.HGet(ctx, objectID, attribute).Int64()
 	if err != nil {
 		fmt.Println("Error fetching from Redis!")

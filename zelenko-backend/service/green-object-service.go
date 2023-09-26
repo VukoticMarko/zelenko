@@ -73,7 +73,6 @@ func (s *greenObjectService) FindAll() []model.GreenObject {
 	}
 
 	list = UpdateScores(list, 1)
-	fmt.Println(counter)
 	counter++
 
 	if counter >= 10 {
@@ -87,24 +86,22 @@ func (s *greenObjectService) FindAll() []model.GreenObject {
 
 func UpdateScores(list []model.GreenObject, flag int) []model.GreenObject {
 	if flag == 1 {
-		fmt.Println(list)
-		for _, element := range list {
+		for i, element := range list {
 			score, err := greenScoreRepository.GetAttributeForObject(element.ID.String(), "Verification")
 			if err != nil {
 				continue
 			}
-			element.GreenScore.Verification = int(score)
-			fmt.Println(element.GreenScore.Verification)
+			list[i].GreenScore.Verification = int(score)
 		}
 		return list
 	}
 	if flag == 2 {
-		for _, element := range list {
+		for i, element := range list {
 			score, err := greenScoreRepository.GetAttributeForObject(element.ID.String(), "Verification")
 			if err != nil {
 				continue
 			}
-			element.GreenScore.Verification = int(score)
+			list[i].GreenScore.Verification = int(score)
 			element = greenObjectRepository.UpdateOne(element)
 		}
 		return list
