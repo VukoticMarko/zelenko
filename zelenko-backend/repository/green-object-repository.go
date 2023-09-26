@@ -121,7 +121,7 @@ func (*goRepository) FindOne(id uuid.UUID) model.GreenObject {
 }
 
 func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject {
-
+	fmt.Println("aloha")
 	sqlConn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		hostSQL, portSQL, userSQL, passwordSQL, dbnameSQL)
 
@@ -139,7 +139,7 @@ func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject 
         "Shape" = $2,
         "TrashType" = $3,
         "Disabled" = $4
-    WHERE "ID" = $5
+    WHERE "Id" = $5
     `
 
 	locationQuery := `
@@ -150,7 +150,7 @@ func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject 
         "Street" = $3,
         "City" = $4,
         "Country" = $5
-    WHERE "ID" = $6
+    WHERE "Id" = $6
     `
 
 	greenScoreQuery := `
@@ -159,7 +159,7 @@ func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject 
         "Verification" = $1,
         "Report" = $2,
         "TrashRank" = $3
-    WHERE "ID" = $4
+    WHERE "Id" = $4
     `
 
 	_, err = db.Exec(greenObjectQuery,
