@@ -88,6 +88,16 @@ func (s *greenObjectService) FindAll() []model.GreenObject {
 func (s *greenObjectService) UpdateObject(object dto.IGreenObject) model.GreenObject {
 
 	result, _ := greenObjectRepository.FindOne(object.ID)
+
+	result.LocationName = object.LocationName
+	result.Shape = object.Shape
+	result.TrashType = object.TrashType
+	result.Location.Latitude = object.Latitude
+	result.Location.Longitude = object.Longitude
+	result.Location.Street = object.Street
+	result.Location.City = object.City
+	result.Location.Country = object.Country
+
 	result = greenObjectRepository.UpdateOne(result)
 	return result
 

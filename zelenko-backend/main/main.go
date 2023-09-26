@@ -40,7 +40,7 @@ func main() {
 	httpRouter.GET("/getAll", greenObjectController.GetAllObjects)
 	httpRouter.POST("/addUser", userController.AddUser)
 	httpRouter.POST("/getUser", userController.GetUser)
-
+	httpRouter.POST("/updateObject", greenObjectController.UpdateObject)
 	httpRouter.SERVE(port)
 
 }
