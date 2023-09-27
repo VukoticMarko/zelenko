@@ -7,18 +7,19 @@ import VectorSource from 'ol/source/Vector';
 import { Geometry, Point } from 'ol/geom';
 import { Flex } from '@chakra-ui/react';
 
-import { IFeatureInfo, createFeature, initializeMap } from './utils';
+import { createFeature as createMarker, initializeMap, transCords } from './utils';
 import { setSelectedGreenObject } from '../../../slices/greenObject.slice';
 
 import './index.css';
 import 'ol/ol.css';
+import { IFeatureInfo } from '../../../common/dtos';
 
 interface IMapContainer {
   edit: boolean;
-  greenObjects: IFeatureInfo[];
+  features: IFeatureInfo[];
 }
 
-const MapContainer = ({ edit, greenObjects }: IMapContainer) => {
+const MapContainer = ({ edit, features }: IMapContainer) => {
 
   const [map, setMap] = useState<Map | undefined>();
   const [featuresLayer, setFeaturesLayer] = useState<VectorLayer<VectorSource<Geometry>> | undefined>();
@@ -33,7 +34,7 @@ const MapContainer = ({ edit, greenObjects }: IMapContainer) => {
     if (map) return;
     if (featuresLayer) return;
 
-    const {initialMap, initialFeaturesLayer, markers} = initializeMap(greenObjects, edit, setSelectedObject);
+    const {initialMap, initialFeaturesLayer, markers} = initializeMap(features, edit, setSelectedObject);
 
     initialMap.setTarget(mapElement.current);
     setMap(initialMap);
@@ -50,14 +51,46 @@ const MapContainer = ({ edit, greenObjects }: IMapContainer) => {
   }, [map]);
 
   useEffect(() => {
-    const foundObject = greenObjects.find(go => go.id === selectedObjectId);
+    if (!features) return;
+    const foundObject = features.find(go => go.id === selectedObjectId);
     dispatch(setSelectedGreenObject(foundObject ?? {id: "", coords: [0, 0]}));
   }, [selectedObjectId]);
 
+  const handeLoad = () => {
+    const newMarkers = features.map(feat => createMarker(feat));
+    featuresLayer?.getSource()?.addFeatures(newMarkers);
+    setMarkers([...newMarkers, ...markers]);
+  }
+
+  const hanldeEdit = () => {
+    for (const feat of features) {
+      const matcherdMarker = markers.find(mark => feat.id == mark.get('greenObjectId'));
+      if (!matcherdMarker) continue;
+      const markerCoords = matcherdMarker.getGeometry()?.getFlatCoordinates();
+      if (!markerCoords) continue;
+      const coordsAreSame = (markerCoords[0] === feat.coords[0]) && (markerCoords[1] === feat.coords[1]) 
+      !coordsAreSame && matcherdMarker.getGeometry()?.setCoordinates([...feat.coords]);
+    }
+  }
+
+  const handleAdd = () => {
+    const newMarker = createMarker(features[features.length - 1]);
+    featuresLayer?.getSource()?.addFeature(newMarker);
+    setMarkers([...markers, newMarker]);
+  }
+
   useEffect(() => {
-    const newFeature = createFeature(greenObjects[greenObjects.length - 1]);
-    featuresLayer?.getSource()?.addFeature(newFeature);
-  }, [JSON.stringify(greenObjects)]);
+    if (features.length === 0) return;
+    if (markers.length === 1) {
+      handeLoad();
+      return;
+    }
+    if (markers.length - 1 === features.length) {
+      hanldeEdit()
+      return;
+    }
+    handleAdd();
+  }, [JSON.stringify(features)]);
   
   return (
     <Flex direction={"column"}>

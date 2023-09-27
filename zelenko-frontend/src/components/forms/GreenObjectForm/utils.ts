@@ -1,28 +1,4 @@
-export interface ICreateGreenObjectFormData {
-	LocationName: string;
-    Latitude: number;
-	Longitude: number;
-	Street: string;
-	City: string;
-	Country: string;
-	Shape: string;
-	TrashType: string;
-}
-
-export interface IGreenScoreForm {
-    ID: string;
-	Verification: number;
-	Report: number;
-	TrashRank: string;
-}
-
-export interface ILocationForm {
-	Latitude: number;
-	Longitude: number;
-	Street: string;
-	City: string;
-	Country: string;
-}
+import { ICreateGreenObject, IGreenObject } from "../../../common/dtos";
 
 export const shapeOptions: string[] = [
     'can',
@@ -60,7 +36,7 @@ export const trashTypeOptions: string[] = [
     'hazard'
 ];
 
-export const emptyGreenObjectForm = (coords: number[]): ICreateGreenObjectFormData => {
+export const emptyGreenObjectForm = (coords: number[]): ICreateGreenObject => {
     return {
         LocationName: "",
         Latitude: coords[0],
@@ -68,7 +44,20 @@ export const emptyGreenObjectForm = (coords: number[]): ICreateGreenObjectFormDa
         Street: "",
         City: "",
         Country: "",
-        Shape: "",
-        TrashType: "",
+        Shape: "can",
+        TrashType: "all",
+    }
+}
+
+export const transFromGreenObject = (greenObject: IGreenObject) : ICreateGreenObject => {
+    return {
+        LocationName: greenObject.LocationName,
+        Latitude: greenObject.Location.Latitude,
+        Longitude: greenObject.Location.Longitude,
+        Street: greenObject.Location.Street,
+        City: greenObject.Location.City,
+        Country: greenObject.Location.Country,
+        Shape: greenObject.Shape,
+        TrashType: greenObject.TrashType,
     }
 }

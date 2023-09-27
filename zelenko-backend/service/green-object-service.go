@@ -13,6 +13,7 @@ type GreenObjectService interface {
 	AddObject(dto.IGreenObject) model.GreenObject
 	FindAll() []model.GreenObject
 	UpdateObject(dto.IGreenObject) model.GreenObject
+	DeleteObject(dto.IGreenObject)
 }
 
 type greenObjectService struct{}
@@ -20,12 +21,14 @@ type greenObjectService struct{}
 var (
 	greenObjectRepository repository.GreenObjectRepository
 	counter               int
+	updateLimit           int
 )
 
 func NewGreenObjectService(gor repository.GreenObjectRepository, gsr repository.GreenScoreRepository) GreenObjectService {
 	greenScoreRepository = gsr
 	greenObjectRepository = gor
 	counter = 0
+	updateLimit = 10 // Redis -> SQL Saving on xy calls of FindAll()
 	return &greenObjectService{}
 }
 
@@ -76,7 +79,7 @@ func (s *greenObjectService) FindAll() []model.GreenObject {
 	list = UpdateScores(list, 1)
 	counter++
 
-	if counter >= 10 {
+	if counter >= updateLimit {
 		UpdateScores(list, 2)
 		counter = 0
 	}
@@ -126,4 +129,12 @@ func UpdateScores(list []model.GreenObject, flag int) []model.GreenObject {
 		return list
 	}
 	return list
+}
+
+func (s *greenObjectService) DeleteObject(object dto.IGreenObject) {
+
+	result, _ := greenObjectRepository.FindOne(object.ID)
+
+	greenObjectRepository.DeleteOne(result)
+
 }

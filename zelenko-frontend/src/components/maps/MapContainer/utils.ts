@@ -11,6 +11,7 @@ import { v4 as uuid } from 'uuid';
 
 import {store} from '../../../slices/store';
 import { setNewCords } from '../../../slices/greenObject.slice';
+import { IFeatureInfo } from '../../../common/dtos';
 
 
 const CENTER_CORDS = [19.833549, 45.267136];
@@ -31,11 +32,6 @@ export interface IInitMapResult {
     initialFeaturesLayer: VectorLayer<VectorSource<Geometry>>;
     markers: Feature<Point>[];
     moovable?: Feature<Point>;
-}
-
-export interface IFeatureInfo {
-    id: string;
-    coords: number[];
 }
 
 export const createFeature = (featureInfo: IFeatureInfo, icon?: string, iconScale?: number): Feature<Point> => {
@@ -109,9 +105,7 @@ export const initializeMap = (features: IFeatureInfo[], edit?: boolean, setSelec
         let clickedFeature = initialMap.forEachFeatureAtPixel(event.pixel, (feature) => {
             return feature;
         });
-        // if(clickedFeature) {
-            edit && setSelected(clickedFeature?.get('greenObjectId'));
-        // }
+        edit && setSelected(clickedFeature?.get('greenObjectId'));
     });
 
     const view = initialMap.getView();

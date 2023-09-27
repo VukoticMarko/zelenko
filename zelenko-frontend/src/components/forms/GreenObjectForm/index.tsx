@@ -1,35 +1,52 @@
 import { useEffect } from 'react';
 import { useFormik } from 'formik';
-import { ICreateGreenObjectFormData, emptyGreenObjectForm, shapeOptions, trashTypeOptions } from './utils';
-import { Button, FormControl, FormLabel, HStack, Input, Select, VStack } from '@chakra-ui/react';
+import { emptyGreenObjectForm, shapeOptions, transFromGreenObject, trashTypeOptions } from './utils';
+import { Button, Card, FormControl, FormLabel, HStack, Heading, Input, Select, VStack } from '@chakra-ui/react';
 import { RootState } from '../../../slices/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { transCords } from '../../maps/MapContainer/utils';
-import { v4 as uuid } from 'uuid';
-import { createObjectApi } from '../../../api/greenObjects.api';
+import { createObjectApi, updateObjectApi } from '../../../api/greenObjects.api';
+import { ICreateGreenObject, IGreenObject } from '../../../common/dtos';
+import { addGreenObject, switchEdit, updateGreenScore } from '../../../slices/greenObject.slice';
 
 interface IGreenObjectFormProps {
     successCallback?: any;
+    isEdit?: boolean;
+    greenObject?: IGreenObject;
 }
 
-const GreenObjectForm = ({ successCallback }: IGreenObjectFormProps) => {
+const GreenObjectForm = ({ isEdit, greenObject }: IGreenObjectFormProps) => {
 
+    const dispatch = useDispatch();
     const newCoords = useSelector<RootState, number[]>((state) => state.greenObjects.newCords);
-    const postGreenObject = async (values: ICreateGreenObjectFormData) => {
-        console.log("values => ", values);
+    const postGreenObject = async (values: ICreateGreenObject) => {
         try {
-            const response = await createObjectApi(values);
-            if (successCallback) successCallback(uuid(), transCords([values.Latitude, values.Longitude], true));
-            console.log("resp => ", response);
+            const newGreenObject = await createObjectApi({...values, Latitude: +values.Latitude, Longitude: +values.Longitude});
+            dispatch(addGreenObject(newGreenObject));
+            formik.resetForm();
         } catch (err) {
             console.log(err);
         }
     }
 
-    const formik = useFormik<ICreateGreenObjectFormData>({
-        initialValues: emptyGreenObjectForm(transCords(newCoords)),
-        enableReinitialize: true,
-        onSubmit: postGreenObject
+    const patchGreenObject = async (values: ICreateGreenObject) => {
+        try {
+            if (!greenObject) return;
+            const patchedGreenObject = await updateObjectApi(
+                {...values, ID: greenObject.ID, Latitude: +values.Latitude, Longitude: +values.Longitude}
+            );
+            dispatch(updateGreenScore(patchedGreenObject));
+            dispatch(switchEdit(false));
+            formik.resetForm();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const formik = useFormik<ICreateGreenObject>({
+        initialValues: greenObject ? transFromGreenObject(greenObject) : emptyGreenObjectForm(transCords(newCoords)),
+        // enableReinitialize: true,
+        onSubmit: isEdit ? patchGreenObject : postGreenObject
     });
 
     useEffect(() => {
@@ -42,9 +59,10 @@ const GreenObjectForm = ({ successCallback }: IGreenObjectFormProps) => {
     }, [newCoords]);
 
 
-    return (<>
-        <form onSubmit={formik.handleSubmit}>
-            <VStack spacing={4} align="flex-start" marginTop={4}>
+    return (<Card borderWidth={'thick'} padding={'10px'} marginTop={4} alignItems={'flex-start'}>
+        <Heading>{isEdit ? "Edit Green Object" : "Create Green Object"}</Heading>
+        <form onSubmit={formik.handleSubmit} style={{width: '100%'}}>
+            <VStack spacing={4} align="flex-start">
                 <FormControl>
                     <FormLabel htmlFor="LocationName">Location Name</FormLabel>
                     <Input
@@ -131,7 +149,7 @@ const GreenObjectForm = ({ successCallback }: IGreenObjectFormProps) => {
                         </Select>
                     </FormControl>
                     <FormControl>
-                        <FormLabel htmlFor="Shape">Shape</FormLabel>
+                        <FormLabel htmlFor="Type">Type</FormLabel>
                         <Select
                             id="TrashType"
                             name="TrashType"
@@ -145,10 +163,13 @@ const GreenObjectForm = ({ successCallback }: IGreenObjectFormProps) => {
                         </Select>
                     </FormControl>
                 </HStack>
-                <Button type='submit'>Add Green Object</Button>
+                <HStack>
+                    <Button type='submit'>{isEdit ? "Edit Green Object" : "Add Green Object"}</Button>
+                    {isEdit && <Button onClick={() => dispatch(switchEdit(false))}>Cancel</Button>}
+                </HStack>
             </VStack>
         </form>
-    </>);
+    </Card>);
 }
 
 export default GreenObjectForm;

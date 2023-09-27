@@ -13,6 +13,7 @@ type GreenObjectRepository interface {
 	FindAll() ([]model.GreenObject, error)
 	UpdateOne(model.GreenObject) model.GreenObject
 	FindOne(objectID string) (model.GreenObject, error)
+	DeleteOne(model.GreenObject)
 }
 
 type goRepository struct{}
@@ -73,6 +74,7 @@ func (*goRepository) FindAll() ([]model.GreenObject, error) {
 	}
 
 	defer db.Close()
+
 	query := `
 	SELECT
 		go."Id", go."LocationName", go."Shape", go."TrashType", go."Disabled",
@@ -228,4 +230,43 @@ func (*goRepository) UpdateOne(greenObject model.GreenObject) model.GreenObject 
 	)
 
 	return greenObject
+}
+
+func (*goRepository) DeleteOne(greenObject model.GreenObject) {
+
+	sqlConn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		hostSQL, portSQL, userSQL, passwordSQL, dbnameSQL)
+
+	db, err := sql.Open("postgres", sqlConn)
+	if err != nil {
+		panic(err)
+	}
+
+	defer db.Close()
+
+	tx, err := db.Begin()
+	if err != nil {
+
+	}
+
+	queryDeleteLocation := `DELETE FROM "GreenObject" WHERE "Location" = $1`
+	_, err = tx.Exec(queryDeleteLocation, greenObject.ID)
+	if err != nil {
+		tx.Rollback()
+
+	}
+
+	queryDeleteScore := `DELETE FROM "GreenObject" WHERE "GreenScore" = $1`
+	_, err = tx.Exec(queryDeleteScore, greenObject.ID)
+	if err != nil {
+		tx.Rollback()
+
+	}
+
+	queryDeleteObject := `DELETE FROM "GreenObject" WHERE "Id" = $1`
+	_, err = tx.Exec(queryDeleteObject, greenObject.ID)
+	if err != nil {
+		tx.Rollback()
+
+	}
 }

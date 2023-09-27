@@ -11,6 +11,7 @@ type GreenObjectController interface {
 	AddObject(response http.ResponseWriter, request *http.Request)
 	GetAllObjects(response http.ResponseWriter, request *http.Request)
 	UpdateObject(response http.ResponseWriter, request *http.Request)
+	DeleteObject(response http.ResponseWriter, request *http.Request)
 }
 
 type greenObjectController struct{}
@@ -66,4 +67,20 @@ func (*greenScoreController) UpdateObject(response http.ResponseWriter, request 
 
 	response.WriteHeader(http.StatusOK)
 	json.NewEncoder(response).Encode(result)
+}
+
+func (*greenScoreController) DeleteObject(response http.ResponseWriter, request *http.Request) {
+
+	var greenObject dto.IGreenObject
+
+	err := json.NewDecoder(request.Body).Decode(&greenObject)
+
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	greenObjectService.DeleteObject(greenObject)
+
+	response.WriteHeader(http.StatusOK)
 }

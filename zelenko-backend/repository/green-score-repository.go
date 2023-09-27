@@ -28,9 +28,9 @@ func NewGreenScoreRepository() GreenScoreRepository {
 
 func initRedis() {
 	redisClient = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:     addrCRDT,
+		Password: passwordCRDT,
+		DB:       dbCRDT,
 	})
 
 	pong, err := redisClient.Ping(ctx).Result()
