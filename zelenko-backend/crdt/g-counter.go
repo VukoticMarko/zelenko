@@ -11,6 +11,8 @@ type GCounter struct {
 	decrements map[string]int
 }
 
+var gCounters []*GCounter
+
 func NewGCounter() *GCounter {
 	return &GCounter{
 		increments: make(map[string]int),
@@ -38,4 +40,33 @@ func (c *GCounter) GetValue(objectID string) int {
 	defer c.mu.Unlock()
 	value := c.increments[objectID] - c.decrements[objectID]
 	return value
+}
+
+func (c *GCounter) Merge(replicas []*GCounter) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	mergedIncrements := make(map[string]int)
+
+	for _, replica := range replicas {
+		for objectID, increment := range replica.increments {
+			mergedIncrements[objectID] += increment
+		}
+	}
+
+	mergedDecrements := make(map[string]int)
+
+	for _, replica := range replicas {
+		for objectID, decrement := range replica.decrements {
+			mergedDecrements[objectID] += decrement
+		}
+	}
+
+	for objectID, increment := range mergedIncrements {
+		c.increments[objectID] = increment
+	}
+
+	for objectID, decrement := range mergedDecrements {
+		c.decrements[objectID] = decrement
+	}
 }
