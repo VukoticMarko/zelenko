@@ -14,13 +14,14 @@ type GreenScoreService interface {
 type greenScoreService struct{}
 
 var (
-	g_counter            crdt.GCounter
 	greenScoreRepository repository.GreenScoreRepository
+	g_counter            crdt.GCounter
+	replicasKeys         []string
+	replicas             []*crdt.GCounter
 )
 
-func NewGreenScoreService(gsr repository.GreenScoreRepository, gc crdt.GCounter) GreenScoreService {
-
-	g_counter = gc
+func NewGreenScoreService(gsr repository.GreenScoreRepository) GreenScoreService {
+	g_counter = *crdt.NewGCounter()
 	greenScoreRepository = gsr
 	return &greenScoreService{}
 }
@@ -29,6 +30,12 @@ func NewGreenScoreService(gsr repository.GreenScoreRepository, gc crdt.GCounter)
 // Test for redis cli: redis-cli HGET cde5ac3c-5c0f-489e-9342-ba2215037fa5 Verification
 func (s *greenScoreService) AddOne(request model.GreenObject) model.GreenObject {
 
+	replicasKeys = g_counter.GetKeyList()
+	for _, replicaKey := range replicasKeys {
+		if request.ID.String() == replicaKey {
+
+		}
+	}
 	var g_count int
 	g_counter.Increment(request.ID.String())
 	g_count = g_counter.GetValue(request.ID.String())
@@ -42,6 +49,7 @@ func (s *greenScoreService) AddOne(request model.GreenObject) model.GreenObject 
 
 func (s *greenScoreService) SubOne(request model.GreenObject) model.GreenObject {
 
+	var g_counter crdt.GCounter
 	var g_count int
 	g_counter.Decrement(request.ID.String())
 	g_count = g_counter.GetValue(request.ID.String())

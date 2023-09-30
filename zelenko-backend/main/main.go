@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"zelenko-backend/controller"
-	"zelenko-backend/crdt"
 	"zelenko-backend/repository"
 	"zelenko-backend/router"
 	"zelenko-backend/service"
@@ -13,9 +12,8 @@ import (
 func main() {
 
 	var (
-		g_counter            crdt.GCounter                   = *crdt.NewGCounter()
 		greenScoreRepository repository.GreenScoreRepository = repository.NewGreenScoreRepository()
-		greenScoreService    service.GreenScoreService       = service.NewGreenScoreService(greenScoreRepository, g_counter)
+		greenScoreService    service.GreenScoreService       = service.NewGreenScoreService(greenScoreRepository)
 		greenScoreController controller.GreenScoreController = controller.NewGreenScoreController(greenScoreService)
 
 		greenObjectRepository repository.GreenObjectRepository = repository.NewGreenObjectRepository()
